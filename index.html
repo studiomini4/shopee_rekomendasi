@@ -44,10 +44,11 @@
     </div>
 
     <main class="max-w-xl mx-auto px-4 py-8 flex-grow w-full">
-        <div id="shop-list" class="space-y-3">
-            </div>
+        <!-- DIUBAH: Menggunakan grid-cols-2 untuk tampilan 2x2 di HP -->
+        <div id="shop-list" class="grid grid-cols-2 gap-3">
+        </div>
 
-        <div id="pagination-container" class="mt-10 grid grid-cols-2 gap-4">
+        <div id="pagination-container" class="mt-8 grid grid-cols-2 gap-4">
             <button id="prevBtn" onclick="changePage(-1)" class="bg-white border-2 border-gray-100 py-3 rounded-2xl font-bold text-sm text-gray-600 disabled:opacity-30">← Prev</button>
             <button id="nextBtn" onclick="changePage(1)" class="bg-orange-500 border-2 border-orange-500 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-orange-100 disabled:opacity-30">Next →</button>
         </div>
@@ -82,7 +83,8 @@
             return { n: p[0], d: p[1], i: p[2], l: p[3], k: p[4] };
         });
 
-        let filtered = [...shops], curPage = 1, perPage = 9;
+        // DIUBAH: perPage diubah dari 9 menjadi 4
+        let filtered = [...shops], curPage = 1, perPage = 4;
 
         function render() {
             const cont = document.getElementById('shop-list');
@@ -90,17 +92,15 @@
             const items = filtered.slice(start, start + perPage);
             const total = Math.ceil(filtered.length / perPage);
 
+            // DIUBAH: Desain card disesuaikan menjadi bentuk kotak (vertikal card) agar rapi dalam grid 2x2
             cont.innerHTML = items.map(s => `
-                <a href="${s.l}" target="_blank" class="shop-card bg-white p-4 rounded-3xl flex items-center gap-4 shadow-sm border border-gray-100 block">
-                    <img src="${s.i}" class="w-16 h-16 rounded-2xl object-cover bg-gray-50 flex-shrink-0 border border-gray-50" loading="lazy">
-                    <div class="flex-1 overflow-hidden">
-                        <p class="text-[9px] font-bold text-orange-500 uppercase tracking-wider mb-0.5">${s.k}</p>
-                        <h3 class="text-sm font-bold truncate text-gray-900">${s.n}</h3>
-                        <p class="text-[10px] text-gray-400 truncate">${s.d}</p>
+                <a href="${s.l}" target="_blank" class="shop-card bg-white p-3 rounded-2xl flex flex-col items-center text-center shadow-sm border border-gray-100 block justify-between h-full">
+                    <div class="w-full flex flex-col items-center">
+                        <img src="${s.i}" class="w-20 h-20 rounded-xl object-cover bg-gray-50 border border-gray-50 mb-2" loading="lazy">
+                        <p class="text-[9px] font-bold text-orange-500 uppercase tracking-wider mb-1">${s.k}</p>
+                        <h3 class="text-xs font-bold line-clamp-2 text-gray-900 px-1 w-full leading-tight mb-1">${s.n}</h3>
                     </div>
-                    <div class="bg-gray-50 p-2 rounded-full text-orange-500">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
-                    </div>
+                    <p class="text-[10px] text-gray-400 line-clamp-1 w-full px-1 mt-auto">${s.d}</p>
                 </a>
             `).join('');
 
