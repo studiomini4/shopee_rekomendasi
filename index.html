@@ -21,7 +21,9 @@
     <nav class="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100 px-4 py-3">
         <div class="max-w-xl mx-auto flex justify-between items-center">
             <h1 class="text-orange-600 font-black text-lg tracking-tighter">TOKO PILIHAN</h1>
-            <div class="text-[10px] bg-gray-100 px-2 py-1 rounded-md font-bold text-gray-500 uppercase">studiomini</div>
+            <a href="https://shopee.co.id/studiomini4" target="_blank" class="text-[10px] bg-gray-100 px-2 py-1 rounded-md font-bold text-gray-500 uppercase hover:bg-orange-500 hover:text-white transition-colors block cursor-pointer">
+                studiomini
+            </a>
         </div>
     </nav>
 
@@ -44,7 +46,6 @@
     </div>
 
     <main class="max-w-xl mx-auto px-4 py-8 flex-grow w-full">
-        <!-- DIUBAH: Menggunakan grid-cols-2 untuk tampilan 2x2 di HP -->
         <div id="shop-list" class="grid grid-cols-2 gap-3">
         </div>
 
@@ -83,7 +84,6 @@
             return { n: p[0], d: p[1], i: p[2], l: p[3], k: p[4] };
         });
 
-        // DIUBAH: perPage diubah dari 9 menjadi 4
         let filtered = [...shops], curPage = 1, perPage = 4;
 
         function render() {
@@ -92,7 +92,6 @@
             const items = filtered.slice(start, start + perPage);
             const total = Math.ceil(filtered.length / perPage);
 
-            // DIUBAH: Desain card disesuaikan menjadi bentuk kotak (vertikal card) agar rapi dalam grid 2x2
             cont.innerHTML = items.map(s => `
                 <a href="${s.l}" target="_blank" class="shop-card bg-white p-3 rounded-2xl flex flex-col items-center text-center shadow-sm border border-gray-100 block justify-between h-full">
                     <div class="w-full flex flex-col items-center">
