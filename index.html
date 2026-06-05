@@ -26,7 +26,31 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="text-slate-800 flex flex-col min-h-screen antialiased">
+<body class="text-slate-800 flex flex-col min-h-screen antialiased relative">
+
+    <audio id="bgMusic"></audio>
+
+    <div class="fixed bottom-6 right-6 z-50 flex items-center bg-white/95 backdrop-blur-md p-2 rounded-full shadow-xl border border-slate-200/80 gap-2 pl-4 pr-2 max-w-sm transition-all duration-300">
+        <div class="flex flex-col text-left max-w-[120px] sm:max-w-[160px]">
+            <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase">Putar Audio</span>
+            <span id="audioStatus" class="text-[11px] font-extrabold text-slate-700 truncate">Memuat...</span>
+        </div>
+        
+        <div class="flex items-center gap-1 bg-slate-50 p-1 rounded-full border border-slate-100">
+            <button onclick="prevTrack()" class="w-7 h-7 bg-white text-slate-600 rounded-full flex items-center justify-center hover:bg-slate-100 active:scale-90 border border-slate-200 transition-all">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            </button>
+
+            <button id="audioBtn" onclick="toggleAudio()" class="w-9 h-9 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-full flex items-center justify-center shadow-md shadow-amber-500/10 transition-all duration-200 active:scale-95">
+                <svg id="playIcon" class="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg id="pauseIcon" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+
+            <button onclick="nextTrack()" class="w-7 h-7 bg-white text-slate-600 rounded-full flex items-center justify-center hover:bg-slate-100 active:scale-90 border border-slate-200 transition-all">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6zm9-12v12h2V6z"/></svg>
+            </button>
+        </div>
+    </div>
 
     <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-4 py-3.5">
         <div class="max-w-xl mx-auto flex justify-between items-center">
@@ -43,11 +67,11 @@
     <section class="gradient-premium px-6 pt-10 pb-16 text-white text-center relative overflow-hidden">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.15),transparent_50%)]"></div>
         <div class="max-w-xl mx-auto relative z-10">
-            <h2 class="text-2xl font-black tracking-tight mb-2">Selamat Datang! 👋</h2>
+            <h2 class="text-2xl font-black tracking-tight mb-2">SELAMAT DATANG 👋</h2>
             <p class="text-xs text-slate-300 opacity-90 leading-relaxed font-medium max-w-sm mx-auto">
-                Temukan kurasi rekomendasi toko Shopee terbaik. <br>
+                Selamat berbelanja, kami adalah pintu masuk anda. <br>
                 <span class="bg-white/10 text-amber-400 border border-white/10 px-2.5 py-1 rounded-full mt-3 inline-block font-semibold">
-                    Klik toko untuk langsung berkunjung
+                    Klik Toko Untuk melihat Produk
                 </span>
             </p>
         </div>
@@ -80,11 +104,77 @@
     </main>
 
     <footer class="text-center py-8 border-t border-slate-100 bg-white mt-auto">
-        <p class="text-[9px] text-slate-400 font-bold tracking-[0.2em] uppercase mb-1">Curated with pride by</p>
+        <p class="text-[9px] text-slate-400 font-bold tracking-[0.2em] uppercase mb-1">Terima kasih sudah berkunjung</p>
         <p class="text-xs text-slate-700 font-extrabold tracking-wide">studiomini &bull; jamil</p>
     </footer>
 
     <script>
+        // ==========================================
+        // BAGIAN 1: PENGATURAN PLAYLIST MP3 ANDA
+        // ==========================================
+        // Tuliskan nama file MP3 Anda yang ada di folder yang sama di bawah ini.
+        // Format: { judul: "Judul Tampilan", file: "nama_file_asli.mp3" }
+        const daftarAudio = [
+            { judul: "Arrohman-Ustad Abdul Qadir", file: "surah 1.ogg" },
+            { judul: "Al Waqiah-Ustad Abdul Qadir", file: "surah 2.ogg" },
+            { judul: "Nasyid Pilihan", file: "nasyid1.mp3" },
+            { judul: "Dzikir Pagi", file: "dzikir.mp3" }
+        ];
+
+        let indexAudioSekarang = 0;
+        const audio = document.getElementById('bgMusic');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const statusText = document.getElementById('audioStatus');
+
+        // Fungsi inisialisasi lagu pertama saat web dimuat
+        function muatAudio(index) {
+            if (daftarAudio.length === 0) return;
+            audio.src = daftarAudio[index].file;
+            statusText.textContent = daftarAudio[index].judul;
+        }
+
+        function toggleAudio() {
+            if (audio.paused) {
+                audio.play().then(() => {
+                    playIcon.classList.add('hidden');
+                    pauseIcon.classList.remove('hidden');
+                }).catch(err => console.log("Interaksi user diperlukan terlebih dahulu"));
+            } else {
+                audio.pause();
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            }
+        }
+
+        function nextTrack() {
+            indexAudioSekarang = (indexAudioSekarang + 1) % daftarAudio.length;
+            muatAudio(indexAudioSekarang);
+            audio.play();
+            playIcon.classList.add('hidden');
+            pauseIcon.classList.remove('hidden');
+        }
+
+        function prevTrack() {
+            indexAudioSekarang = (indexAudioSekarang - 1 + daftarAudio.length) % daftarAudio.length;
+            muatAudio(indexAudioSekarang);
+            audio.play();
+            playIcon.classList.add('hidden');
+            pauseIcon.classList.remove('hidden');
+        }
+
+        // Otomatis putar lagu berikutnya jika lagu sekarang habis selesai diputar
+        audio.addEventListener('ended', function() {
+            nextTrack();
+        });
+
+        // Muat musik pertama kali saat script dibaca
+        muatAudio(indexAudioSekarang);
+
+
+        // ==========================================
+        // BAGIAN 2: DATA KATALOG TOKO DAN FITURNYA
+        // ==========================================
         const daftarToko = [
             "Moslem Sunah Bandung | Gamis Wanita | https://cf.shopee.sg/file/id-11134216-7ra0o-mclagnoh0r3jf4 | https://s.shopee.co.id/6VIfxtajs9 | Fashion",
             "Kurta Pria | Baju Kurta | https://down-tx-id.img.susercontent.com/id-11134216-7r98s-m037np9mcrn30a_tn.webp | https://s.shopee.co.id/6AfpZWWMS1 | Fashion",
@@ -103,6 +193,9 @@
             "Yoi-shop | Perabotan Rumah Tangga | https://down-tx-id.img.susercontent.com/1c4ff569de3b6024f294c6f5d12f85bb_tn.webp | https://s.shopee.co.id/8KkKFlH6pH | Perabot",
             "SIV Homedeco | Perabotan Rumah Tangga | https://down-tx-id.img.susercontent.com/8d91cb50bddbcd2b3f8c3ae5ce2ba747_tn.webp | https://s.shopee.co.id/5fm8s6etJw | Perabot",
             "Faeyza Comp Official | Komputer & Laptop | https://down-tx-id.img.susercontent.com/id-11134233-7qul5-ljqt9ge3b3my8e_tn.webp | https://s.shopee.co.id/AKXyRtwTv0 | Elektronik",
+            "Grage Shop | Fashion muslimah | https://down-tx-id.img.susercontent.com/b939bc0d44777d8d9022001b598b6028_tn.webp | https://s.shopee.co.id/6fegaJOMPk | Fashion",
+            "Putri Rinti Collection | Fashion muslimah | https://down-tx-id.img.susercontent.com/a6120563552db1447bc4c83696ecbcb4_tn.webp | https://s.shopee.co.id/8pjBAc2G67 | Fashion",
+            "Hippo Land | Fashion bayi | https://down-tx-id.img.susercontent.com/58dccd0b35aa0aae11ffd214c9a4b3a5_tn.webp | https://s.shopee.co.id/6L1qC8Q8Q2 | Fashion",
         ];
 
         const shops = daftarToko.map(item => {
@@ -110,7 +203,6 @@
             return { n: p[0], d: p[1], i: p[2], l: p[3], k: p[4] };
         });
 
-        // FUNGSI BARU: Untuk mengacak array secara merata (Fisher-Yates Shuffle)
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -118,7 +210,6 @@
             }
         }
 
-        // Jalankan pengacakan pada data toko setelah di-map
         shuffleArray(shops);
 
         const categories = ["Semua", ...new Set(shops.map(s => s.k))];
