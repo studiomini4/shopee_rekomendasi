@@ -3,68 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Katalog Toko Shopee</title>
+    <title>Katalog Toko Pilihan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f9;
+            background-color: #f8fafc;
             -webkit-tap-highlight-color: transparent;
         }
-        .shop-card { transition: transform 0.1s; }
-        .shop-card:active { transform: scale(0.97); }
-        .gradient-shopee { background: linear-gradient(135deg, #ff4d00 0%, #ff8300 100%); }
-        /* Menyembunyikan scrollbar untuk kategori di mobile tapi tetap bisa di-scroll */
+        .shop-card { 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        @media (min-width: 640px) {
+            .shop-card:hover { 
+                transform: translateY(-4px); 
+                box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.08);
+            }
+        }
+        .shop-card:active { transform: scale(0.98); }
+        .gradient-premium { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="text-gray-800 flex flex-col min-h-screen">
+<body class="text-slate-800 flex flex-col min-h-screen antialiased">
 
-    <nav class="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100 px-4 py-3">
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-4 py-3.5">
         <div class="max-w-xl mx-auto flex justify-between items-center">
-            <h1 class="text-orange-600 font-black text-lg tracking-tighter">TOKO PILIHAN</h1>
-            <a href="https://shopee.co.id/studiomini" target="_blank" class="text-[10px] bg-gray-100 px-2 py-1 rounded-md font-bold text-gray-500 uppercase hover:bg-orange-500 hover:text-white transition-colors block cursor-pointer">
+            <h1 class="text-slate-900 font-black text-lg tracking-tight flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                TOKO PILIHAN
+            </h1>
+            <a href="https://shopee.co.id/studiomini" target="_blank" class="text-[10px] bg-slate-100 px-2.5 py-1.5 rounded-lg font-bold text-slate-600 uppercase hover:bg-amber-500 hover:text-slate-950 transition-all duration-200 block cursor-pointer tracking-wider">
                 studiomini
             </a>
         </div>
     </nav>
 
-    <section class="gradient-shopee px-6 py-8 text-white text-center pb-12">
-        <div class="max-w-xl mx-auto">
-            <h2 class="text-xl font-extrabold mb-2">Selamat Datang! 👋</h2>
-            <p class="text-sm opacity-90 leading-relaxed font-medium">
-                Temukan rekomendasi toko Shopee terbaik. <br>
-                <span class="bg-white/20 px-2 py-1 rounded mt-2 inline-block text-xs">Klik gratis sekarang tokonya untuk melihat-lihat!</span>
+    <section class="gradient-premium px-6 pt-10 pb-16 text-white text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.15),transparent_50%)]"></div>
+        <div class="max-w-xl mx-auto relative z-10">
+            <h2 class="text-2xl font-black tracking-tight mb-2">Selamat Datang! 👋</h2>
+            <p class="text-xs text-slate-300 opacity-90 leading-relaxed font-medium max-w-sm mx-auto">
+                Temukan kurasi rekomendasi toko Shopee terbaik. <br>
+                <span class="bg-white/10 text-amber-400 border border-white/10 px-2.5 py-1 rounded-full mt-3 inline-block font-semibold">
+                    Klik toko untuk langsung berkunjung
+                </span>
             </p>
         </div>
     </section>
 
-    <main class="max-w-xl mx-auto px-4 flex-grow w-full -mt-6">
+    <main class="max-w-xl mx-auto px-4 flex-grow w-full -mt-8 relative z-20">
         
-        <div class="bg-white rounded-2xl p-4 shadow-xl border border-gray-100 mb-6">
-            <div class="relative mb-3">
-                <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Cari nama toko..." 
-                class="w-full bg-gray-50 border border-gray-100 rounded-xl px-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all">
-                <svg class="w-5 h-5 absolute left-4 top-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <div class="bg-white rounded-2xl p-4 shadow-xl shadow-slate-200/50 border border-slate-100 mb-6">
+            <div class="relative mb-3.5">
+                <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Cari nama toko atau produk..." 
+                class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-11 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white transition-all placeholder:text-slate-400">
+                <svg class="w-5 h-5 absolute left-4 top-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
             
             <div id="category-tags" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                 </div>
         </div>
 
-        <div id="shop-list" class="grid grid-cols-2 gap-3">
+        <div id="shop-list" class="grid grid-cols-2 gap-3.5">
             </div>
 
-        <div id="pagination-container" class="mt-8 grid grid-cols-2 gap-4 pb-8">
-            <button id="prevBtn" onclick="changePage(-1)" class="bg-white border-2 border-gray-100 py-3 rounded-2xl font-bold text-sm text-gray-600 disabled:opacity-30">← Prev</button>
-            <button id="nextBtn" onclick="changePage(1)" class="bg-orange-500 border-2 border-orange-500 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-orange-100 disabled:opacity-30">Next →</button>
+        <div id="pagination-container" class="mt-8 grid grid-cols-2 gap-4 pb-12">
+            <button id="prevBtn" onclick="changePage(-1)" class="bg-white border border-slate-200 py-3 rounded-xl font-bold text-sm text-slate-600 shadow-sm transition-all active:bg-slate-50 disabled:opacity-30 disabled:pointer-events-none">
+                ← Sebelumnya
+            </button>
+            <button id="nextBtn" onclick="changePage(1)" class="bg-slate-900 border border-slate-900 py-3 rounded-xl font-bold text-sm text-white shadow-md shadow-slate-900/10 transition-all active:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none">
+                Selanjutnya →
+            </button>
         </div>
     </main>
 
-    <footer class="text-center py-8 border-t border-gray-200 bg-white mt-auto">
-        <p class="text-[9px] text-gray-400 font-bold tracking-[0.2em] uppercase mb-1">Developed by</p>
-        <p class="text-xs text-gray-600 font-bold">studiomini / jamil</p>
+    <footer class="text-center py-8 border-t border-slate-100 bg-white mt-auto">
+        <p class="text-[9px] text-slate-400 font-bold tracking-[0.2em] uppercase mb-1">Curated with pride by</p>
+        <p class="text-xs text-slate-700 font-extrabold tracking-wide">studiomini &bull; jamil</p>
     </footer>
 
     <script>
@@ -92,38 +109,33 @@
             return { n: p[0], d: p[1], i: p[2], l: p[3], k: p[4] };
         });
 
-        // Mendapatkan list kategori unik untuk tombol tag
         const categories = ["Semua", ...new Set(shops.map(s => s.k))];
-
         let filtered = [...shops], curPage = 1, perPage = 4, selectedCategory = "Semua";
 
-        // Render Tag Kategori
         function renderCategories() {
             const tagCont = document.getElementById('category-tags');
             tagCont.innerHTML = categories.map(cat => {
                 const isActive = cat === selectedCategory;
                 return `
-                    <button onclick="filterCategory('${cat}')" class="text-xs font-semibold px-4 py-2 rounded-xl border whitespace-nowrap transition-all duration-150
-                    ${isActive ? 'bg-orange-500 text-white border-orange-500 shadow-sm' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'}" >
+                    <button onclick="filterCategory('${cat}')" class="text-xs font-bold px-4 py-2 rounded-xl border transition-all duration-150 whitespace-nowrap
+                    ${isActive ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-sm shadow-amber-500/20' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100 hover:text-slate-700'}" >
                         ${cat}
                     </button>
                 `;
             }).join('');
         }
 
-        // Fungsi saat tag kategori diklik
         function filterCategory(cat) {
             selectedCategory = cat;
-            document.getElementById('searchInput').value = ""; // Reset kolom pencarian
+            document.getElementById('searchInput').value = "";
             applyFilter();
         }
 
-        // Gabungan logika filter pencarian dan kategori
         function applyFilter() {
             const q = document.getElementById('searchInput').value.toLowerCase();
             
             filtered = shops.filter(s => {
-                const matchQuery = s.n.toLowerCase().includes(q) || s.k.toLowerCase().includes(q);
+                const matchQuery = s.n.toLowerCase().includes(q) || s.k.toLowerCase().includes(q) || s.d.toLowerCase().includes(q);
                 const matchCategory = selectedCategory === "Semua" || s.k === selectedCategory;
                 return matchQuery && matchCategory;
             });
@@ -134,7 +146,6 @@
         }
 
         function handleSearch() {
-            // Jika user mengetik sesuatu, lepas filter kategori aktif agar pencarian bersifat global
             if(document.getElementById('searchInput').value !== "") {
                 selectedCategory = "Semua";
             }
@@ -148,16 +159,18 @@
             const total = Math.ceil(filtered.length / perPage);
 
             if(items.length === 0) {
-                cont.innerHTML = `<p class="col-span-2 text-center text-sm text-gray-400 py-8">Toko tidak ditemukan...</p>`;
+                cont.innerHTML = `<p class="col-span-2 text-center text-sm font-medium text-slate-400 py-12">Tidak ada toko yang cocok...</p>`;
             } else {
                 cont.innerHTML = items.map(s => `
-                    <a href="${s.l}" target="_blank" class="shop-card bg-white p-3 rounded-2xl flex flex-col items-center text-center shadow-sm border border-gray-100 block justify-between h-full">
+                    <a href="${s.l}" target="_blank" class="shop-card bg-white p-3.5 rounded-2xl flex flex-col items-center text-center shadow-sm border border-slate-100 justify-between h-full group">
                         <div class="w-full flex flex-col items-center">
-                            <img src="${s.i}" class="w-20 h-20 rounded-xl object-cover bg-gray-50 border border-gray-50 mb-2" loading="lazy">
-                            <p class="text-[9px] font-bold text-orange-500 uppercase tracking-wider mb-1">${s.k}</p>
-                            <h3 class="text-xs font-bold line-clamp-2 text-gray-900 px-1 w-full leading-tight mb-1">${s.n}</h3>
+                            <div class="w-20 h-20 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 mb-3 p-1 flex items-center justify-center">
+                                <img src="${s.i}" class="w-full h-full rounded-lg object-cover" loading="lazy">
+                            </div>
+                            <span class="text-[8px] font-black tracking-widest text-amber-600 bg-amber-50 px-2 py-0.5 rounded mb-2 uppercase">${s.k}</span>
+                            <h3 class="text-xs font-bold line-clamp-2 text-slate-900 group-hover:text-amber-600 transition-colors px-1 w-full leading-snug mb-1">${s.n}</h3>
                         </div>
-                        <p class="text-[10px] text-gray-400 line-clamp-1 w-full px-1 mt-auto">${s.d}</p>
+                        <p class="text-[10px] text-slate-400 font-medium line-clamp-1 w-full px-1 mt-2">${s.d}</p>
                     </a>
                 `).join('');
             }
@@ -172,7 +185,6 @@
             window.scrollTo({top: 0, behavior: 'smooth'}); 
         }
 
-        // Inisialisasi awal
         renderCategories();
         render();
     </script>
