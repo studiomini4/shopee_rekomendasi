@@ -14,6 +14,9 @@
         .shop-card { transition: transform 0.1s; }
         .shop-card:active { transform: scale(0.97); }
         .gradient-shopee { background: linear-gradient(135deg, #ff4d00 0%, #ff8300 100%); }
+        /* Menyembunyikan scrollbar untuk kategori di mobile tapi tetap bisa di-scroll */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="text-gray-800 flex flex-col min-h-screen">
@@ -27,7 +30,7 @@
         </div>
     </nav>
 
-    <section class="gradient-shopee px-6 py-8 text-white text-center">
+    <section class="gradient-shopee px-6 py-8 text-white text-center pb-12">
         <div class="max-w-xl mx-auto">
             <h2 class="text-xl font-extrabold mb-2">Selamat Datang! 👋</h2>
             <p class="text-sm opacity-90 leading-relaxed font-medium">
@@ -37,25 +40,29 @@
         </div>
     </section>
 
-    <div class="max-w-xl mx-auto w-full px-4 -mt-5">
-        <div class="relative shadow-xl">
-            <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Cari nama toko..." 
-            class="w-full bg-white border-none rounded-2xl px-11 py-4 text-sm focus:ring-2 focus:ring-orange-500 shadow-lg">
-            <svg class="w-5 h-5 absolute left-4 top-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+    <main class="max-w-xl mx-auto px-4 flex-grow w-full -mt-6">
+        
+        <div class="bg-white rounded-2xl p-4 shadow-xl border border-gray-100 mb-6">
+            <div class="relative mb-3">
+                <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Cari nama toko..." 
+                class="w-full bg-gray-50 border border-gray-100 rounded-xl px-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all">
+                <svg class="w-5 h-5 absolute left-4 top-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            
+            <div id="category-tags" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                </div>
         </div>
-    </div>
 
-    <main class="max-w-xl mx-auto px-4 py-8 flex-grow w-full">
         <div id="shop-list" class="grid grid-cols-2 gap-3">
-        </div>
+            </div>
 
-        <div id="pagination-container" class="mt-8 grid grid-cols-2 gap-4">
+        <div id="pagination-container" class="mt-8 grid grid-cols-2 gap-4 pb-8">
             <button id="prevBtn" onclick="changePage(-1)" class="bg-white border-2 border-gray-100 py-3 rounded-2xl font-bold text-sm text-gray-600 disabled:opacity-30">← Prev</button>
             <button id="nextBtn" onclick="changePage(1)" class="bg-orange-500 border-2 border-orange-500 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-orange-100 disabled:opacity-30">Next →</button>
         </div>
     </main>
 
-    <footer class="text-center py-8 border-t border-gray-200 bg-white">
+    <footer class="text-center py-8 border-t border-gray-200 bg-white mt-auto">
         <p class="text-[9px] text-gray-400 font-bold tracking-[0.2em] uppercase mb-1">Developed by</p>
         <p class="text-xs text-gray-600 font-bold">studiomini / jamil</p>
     </footer>
@@ -77,6 +84,7 @@
             "Smallsun | Elektronik & Handphone | https://down-tx-id.img.susercontent.com/id-11134216-7r98u-lnmqnbvh48l88f_tn.webp | https://s.shopee.co.id/8fNAdsscil | Elektronik",
             "Calista Official | Perabotan & toples | https://down-tx-id.img.susercontent.com/d5cea5d2d66737c67833fbb2f23af20c_tn.webp | https://s.shopee.co.id/1gDQJHlSMK | Perabot",
             "Yoi-shop | Perabotan Rumah Tangga | https://down-tx-id.img.susercontent.com/1c4ff569de3b6024f294c6f5d12f85bb_tn.webp | https://s.shopee.co.id/8KkKFlH6pH | Perabot",
+            "SIV Homedeco | Perabotan Rumah Tangga | https://down-tx-id.img.susercontent.com/8d91cb50bddbcd2b3f8c3ae5ce2ba747_tn.webp | https://s.shopee.co.id/5fm8s6etJw | Perabot",
         ];
 
         const shops = daftarToko.map(item => {
@@ -84,7 +92,54 @@
             return { n: p[0], d: p[1], i: p[2], l: p[3], k: p[4] };
         });
 
-        let filtered = [...shops], curPage = 1, perPage = 4;
+        // Mendapatkan list kategori unik untuk tombol tag
+        const categories = ["Semua", ...new Set(shops.map(s => s.k))];
+
+        let filtered = [...shops], curPage = 1, perPage = 4, selectedCategory = "Semua";
+
+        // Render Tag Kategori
+        function renderCategories() {
+            const tagCont = document.getElementById('category-tags');
+            tagCont.innerHTML = categories.map(cat => {
+                const isActive = cat === selectedCategory;
+                return `
+                    <button onclick="filterCategory('${cat}')" class="text-xs font-semibold px-4 py-2 rounded-xl border whitespace-nowrap transition-all duration-150
+                    ${isActive ? 'bg-orange-500 text-white border-orange-500 shadow-sm' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'}" >
+                        ${cat}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        // Fungsi saat tag kategori diklik
+        function filterCategory(cat) {
+            selectedCategory = cat;
+            document.getElementById('searchInput').value = ""; // Reset kolom pencarian
+            applyFilter();
+        }
+
+        // Gabungan logika filter pencarian dan kategori
+        function applyFilter() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            
+            filtered = shops.filter(s => {
+                const matchQuery = s.n.toLowerCase().includes(q) || s.k.toLowerCase().includes(q);
+                const matchCategory = selectedCategory === "Semua" || s.k === selectedCategory;
+                return matchQuery && matchCategory;
+            });
+
+            curPage = 1;
+            renderCategories();
+            render();
+        }
+
+        function handleSearch() {
+            // Jika user mengetik sesuatu, lepas filter kategori aktif agar pencarian bersifat global
+            if(document.getElementById('searchInput').value !== "") {
+                selectedCategory = "Semua";
+            }
+            applyFilter();
+        }
 
         function render() {
             const cont = document.getElementById('shop-list');
@@ -92,32 +147,33 @@
             const items = filtered.slice(start, start + perPage);
             const total = Math.ceil(filtered.length / perPage);
 
-            cont.innerHTML = items.map(s => `
-                <a href="${s.l}" target="_blank" class="shop-card bg-white p-3 rounded-2xl flex flex-col items-center text-center shadow-sm border border-gray-100 block justify-between h-full">
-                    <div class="w-full flex flex-col items-center">
-                        <img src="${s.i}" class="w-20 h-20 rounded-xl object-cover bg-gray-50 border border-gray-50 mb-2" loading="lazy">
-                        <p class="text-[9px] font-bold text-orange-500 uppercase tracking-wider mb-1">${s.k}</p>
-                        <h3 class="text-xs font-bold line-clamp-2 text-gray-900 px-1 w-full leading-tight mb-1">${s.n}</h3>
-                    </div>
-                    <p class="text-[10px] text-gray-400 line-clamp-1 w-full px-1 mt-auto">${s.d}</p>
-                </a>
-            `).join('');
+            if(items.length === 0) {
+                cont.innerHTML = `<p class="col-span-2 text-center text-sm text-gray-400 py-8">Toko tidak ditemukan...</p>`;
+            } else {
+                cont.innerHTML = items.map(s => `
+                    <a href="${s.l}" target="_blank" class="shop-card bg-white p-3 rounded-2xl flex flex-col items-center text-center shadow-sm border border-gray-100 block justify-between h-full">
+                        <div class="w-full flex flex-col items-center">
+                            <img src="${s.i}" class="w-20 h-20 rounded-xl object-cover bg-gray-50 border border-gray-50 mb-2" loading="lazy">
+                            <p class="text-[9px] font-bold text-orange-500 uppercase tracking-wider mb-1">${s.k}</p>
+                            <h3 class="text-xs font-bold line-clamp-2 text-gray-900 px-1 w-full leading-tight mb-1">${s.n}</h3>
+                        </div>
+                        <p class="text-[10px] text-gray-400 line-clamp-1 w-full px-1 mt-auto">${s.d}</p>
+                    </a>
+                `).join('');
+            }
 
             document.getElementById('prevBtn').disabled = curPage === 1;
             document.getElementById('nextBtn').disabled = curPage === total || total === 0;
             document.getElementById('pagination-container').style.display = total <= 1 ? 'none' : 'grid';
         }
 
-        function handleSearch() {
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            filtered = shops.filter(s => s.n.toLowerCase().includes(q) || s.k.toLowerCase().includes(q));
-            curPage = 1; render();
-        }
-
         function changePage(dir) { 
             curPage += dir; render(); 
             window.scrollTo({top: 0, behavior: 'smooth'}); 
         }
+
+        // Inisialisasi awal
+        renderCategories();
         render();
     </script>
 </body>
