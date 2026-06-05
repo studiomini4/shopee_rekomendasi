@@ -103,13 +103,23 @@
             "Yoi-shop | Perabotan Rumah Tangga | https://down-tx-id.img.susercontent.com/1c4ff569de3b6024f294c6f5d12f85bb_tn.webp | https://s.shopee.co.id/8KkKFlH6pH | Perabot",
             "SIV Homedeco | Perabotan Rumah Tangga | https://down-tx-id.img.susercontent.com/8d91cb50bddbcd2b3f8c3ae5ce2ba747_tn.webp | https://s.shopee.co.id/5fm8s6etJw | Perabot",
             "Faeyza Comp Official | Komputer & Laptop | https://down-tx-id.img.susercontent.com/id-11134233-7qul5-ljqt9ge3b3my8e_tn.webp | https://s.shopee.co.id/AKXyRtwTv0 | Elektronik",
-        
         ];
 
         const shops = daftarToko.map(item => {
             const p = item.split('|').map(x => x.trim());
             return { n: p[0], d: p[1], i: p[2], l: p[3], k: p[4] };
         });
+
+        // FUNGSI BARU: Untuk mengacak array secara merata (Fisher-Yates Shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Jalankan pengacakan pada data toko setelah di-map
+        shuffleArray(shops);
 
         const categories = ["Semua", ...new Set(shops.map(s => s.k))];
         let filtered = [...shops], curPage = 1, perPage = 4, selectedCategory = "Semua";
