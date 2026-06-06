@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtag/js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-5K23VWBG');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Katalog Toko Pilihan</title>
@@ -28,6 +33,8 @@
 </head>
 <body class="text-slate-800 flex flex-col min-h-screen antialiased relative">
 
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5K23VWBG"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <audio id="bgMusic"></audio>
 
     <div id="audioPlayer" class="fixed top-24 right-6 z-50 flex items-center bg-white/95 backdrop-blur-md p-2 rounded-full shadow-xl border border-slate-200/80 gap-2 pl-4 pr-2 max-w-sm cursor-move select-none touch-none">
@@ -193,8 +200,6 @@
             "Hippo Land | Fashion bayi | https://down-tx-id.img.susercontent.com/58dccd0b35aa0aae11ffd214c9a4b3a5_tn.webp | https://s.shopee.co.id/6L1qC8Q8Q2 | Fashion",
             "Zamza | Undangan & Buku Tamu | https://down-tx-id.img.susercontent.com/10e0546965e07eb1ce39ced32c2aee1e_tn.webp | https://s.shopee.co.id/8V6LpkOFuw | Undangan",
             "Undangan Pernikahan Jakarta | Undangan & Buku Tamu | https://down-tx-id.img.susercontent.com/id-11134216-7r98p-lm4rpz3n5vrzc1_tn.webp | https://s.shopee.co.id/3LOFheQeh4 | Undangan",
-
-
         ];
 
         const shops = daftarToko.map(item => {
@@ -299,7 +304,6 @@
         let currentX, currentY, initialX, initialY;
         let xOffset = 0, yOffset = 0;
 
-        // Listener untuk HP (Touch) dan Laptop/PC (Mouse)
         player.addEventListener("touchstart", dragStart, { passive: false });
         player.addEventListener("touchend", dragEnd, { passive: false });
         player.addEventListener("touchmove", drag, { passive: false });
@@ -309,7 +313,6 @@
         player.addEventListener("mousemove", drag);
 
         function dragStart(e) {
-            // Biarkan tombol play/next/prev tetap berfungsi normal saat diklik (tidak ikut terseret)
             if (e.target.closest('button')) return;
 
             if (e.type === "touchstart") {
@@ -324,7 +327,7 @@
 
         function drag(e) {
             if (isDragging) {
-                e.preventDefault(); // Mencegah scrolling halaman saat player digeser di HP
+                e.preventDefault(); 
                 
                 if (e.type === "touchmove") {
                     currentX = e.touches[0].clientX - initialX;
@@ -337,7 +340,6 @@
                 xOffset = currentX;
                 yOffset = currentY;
 
-                // Menggunakan translate3d agar performa perpindahan di layar HP jauh lebih mulus
                 player.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
             }
         }
