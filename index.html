@@ -30,7 +30,7 @@
 
     <audio id="bgMusic"></audio>
 
-    <div class="fixed bottom-6 right-6 z-50 flex items-center bg-white/95 backdrop-blur-md p-2 rounded-full shadow-xl border border-slate-200/80 gap-2 pl-4 pr-2 max-w-sm transition-all duration-300">
+    <div id="audioPlayer" class="fixed top-24 right-6 z-50 flex items-center bg-white/95 backdrop-blur-md p-2 rounded-full shadow-xl border border-slate-200/80 gap-2 pl-4 pr-2 max-w-sm cursor-move select-none touch-none">
         <div class="flex flex-col text-left max-w-[120px] sm:max-w-[160px]">
             <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase">Putar Audio</span>
             <span id="audioStatus" class="text-[11px] font-extrabold text-slate-700 truncate">Memuat...</span>
@@ -112,8 +112,6 @@
         // ==========================================
         // BAGIAN 1: PENGATURAN PLAYLIST MP3 ANDA
         // ==========================================
-        // Tuliskan nama file MP3 Anda yang ada di folder yang sama di bawah ini.
-        // Format: { judul: "Judul Tampilan", file: "nama_file_asli.mp3" }
         const daftarAudio = [
             { judul: "Arrohman-Ustad Abdul Qadir", file: "surah 1.ogg" },
             { judul: "Al Waqiah-Ustad Abdul Qadir", file: "surah 2.ogg" },
@@ -127,7 +125,6 @@
         const pauseIcon = document.getElementById('pauseIcon');
         const statusText = document.getElementById('audioStatus');
 
-        // Fungsi inisialisasi lagu pertama saat web dimuat
         function muatAudio(index) {
             if (daftarAudio.length === 0) return;
             audio.src = daftarAudio[index].file;
@@ -163,12 +160,10 @@
             pauseIcon.classList.remove('hidden');
         }
 
-        // Otomatis putar lagu berikutnya jika lagu sekarang habis selesai diputar
         audio.addEventListener('ended', function() {
             nextTrack();
         });
 
-        // Muat musik pertama kali saat script dibaca
         muatAudio(indexAudioSekarang);
 
 
@@ -290,6 +285,64 @@
 
         renderCategories();
         render();
+
+
+        // ==========================================
+        // BAGIAN 3: FITUR DRAG & DROP AUDIO PLAYER
+        // ==========================================
+        const player = document.getElementById("audioPlayer");
+        let isDragging = false;
+        let currentX, currentY, initialX, initialY;
+        let xOffset = 0, yOffset = 0;
+
+        // Listener untuk HP (Touch) dan Laptop/PC (Mouse)
+        player.addEventListener("touchstart", dragStart, { passive: false });
+        player.addEventListener("touchend", dragEnd, { passive: false });
+        player.addEventListener("touchmove", drag, { passive: false });
+
+        player.addEventListener("mousedown", dragStart);
+        player.addEventListener("mouseup", dragEnd);
+        player.addEventListener("mousemove", drag);
+
+        function dragStart(e) {
+            // Biarkan tombol play/next/prev tetap berfungsi normal saat diklik (tidak ikut terseret)
+            if (e.target.closest('button')) return;
+
+            if (e.type === "touchstart") {
+                initialX = e.touches[0].clientX - xOffset;
+                initialY = e.touches[0].clientY - yOffset;
+            } else {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+            }
+            isDragging = true;
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault(); // Mencegah scrolling halaman saat player digeser di HP
+                
+                if (e.type === "touchmove") {
+                    currentX = e.touches[0].clientX - initialX;
+                    currentY = e.touches[0].clientY - initialY;
+                } else {
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                }
+
+                xOffset = currentX;
+                yOffset = currentY;
+
+                // Menggunakan translate3d agar performa perpindahan di layar HP jauh lebih mulus
+                player.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+            }
+        }
+
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+        }
     </script>
 </body>
 </html>
