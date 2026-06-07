@@ -29,6 +29,14 @@
         .gradient-premium { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Tambahan CSS untuk indikasi kursor drag pada desktop */
+        #category-tags {
+            cursor: grab;
+        }
+        #category-tags:active {
+            cursor: grabbing;
+        }
     </style>
 </head>
 <body class="text-slate-800 flex flex-col min-h-screen antialiased relative">
@@ -146,7 +154,7 @@
                 }).catch(err => console.log("Interaksi user diperlukan terlebih dahulu"));
             } else {
                 audio.pause();
-                playIcon.textcolormove('hidden');
+                playIcon.classList.remove('hidden');
                 pauseIcon.classList.add('hidden');
             }
         }
@@ -349,6 +357,48 @@
             initialY = currentY;
             isDragging = false;
         }
+
+        // =======================================================
+        // BAGIAN PERBAIKAN BARU: MOUSE DRAG SCROLL UNTUK KATEGORI
+        // =======================================================
+        const categoryCont = document.getElementById('category-tags');
+        let isCatDown = false;
+        let catStartX;
+        let catScrollLeft;
+        let isDraggingCat = false;
+
+        categoryCont.addEventListener('mousedown', (e) => {
+            isCatDown = true;
+            isDraggingCat = false;
+            catStartX = e.pageX - categoryCont.offsetLeft;
+            catScrollLeft = categoryCont.scrollLeft;
+        });
+
+        categoryCont.addEventListener('mouseleave', () => {
+            isCatDown = false;
+        });
+
+        categoryCont.addEventListener('mouseup', () => {
+            isCatDown = false;
+        });
+
+        categoryCont.addEventListener('mousemove', (e) => {
+            if (!isCatDown) return;
+            isDraggingCat = true;
+            e.preventDefault();
+            const x = e.pageX - categoryCont.offsetLeft;
+            const walk = (x - catStartX) * 1.5; // Kecepatan scroll geser mouse
+            categoryCont.scrollLeft = catScrollLeft - walk;
+        });
+
+        // Mencegah klik button tidak sengaja terpicu saat user murni sedang men-drag mouse
+        categoryCont.addEventListener('click', (e) => {
+            if (isDraggingCat) {
+                e.preventDefault();
+                e.stopPropagation();
+                isDraggingCat = false;
+            }
+        }, true);
     </script>
 </body>
 </html>
