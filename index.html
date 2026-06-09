@@ -34,7 +34,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* CSS indikasi kursor drag pada desktop */
         #category-tags {
             cursor: grab;
         }
@@ -110,9 +109,10 @@
         </div>
 
         <div id="shop-list" class="grid grid-cols-2 gap-3.5">
+            <p id="loading-text" class="col-span-2 text-center text-sm font-medium text-slate-400 py-12 animate-pulse">Menghubungkan ke Google Sheets...</p>
         </div>
 
-        <div id="pagination-container" class="mt-8 grid grid-cols-2 gap-4 pb-12">
+        <div id="pagination-container" class="mt-8 grid grid-cols-2 gap-4 pb-12" style="display: none;">
             <button id="prevBtn" onclick="changePage(-1)" class="bg-white border border-slate-200 py-3 rounded-xl font-bold text-sm text-slate-600 shadow-sm transition-all active:bg-slate-50 disabled:opacity-30 disabled:pointer-events-none">
                 ← Sebelumnya
             </button>
@@ -186,40 +186,58 @@
         muatAudio(indexAudioSekarang);
 
 
-        // ==========================================
-        // BAGIAN 2: DATA KATALOG TOKO DAN FITURNYA
-        // ==========================================
-        const daftarToko = [
-            "Moslem Sunah Bandung | Gamis Wanita | https://cf.shopee.sg/file/id-11134216-7ra0o-mclagnoh0r3jf4 | https://s.shopee.co.id/6VIfxtajs9 | Fashion",
-            "Kurta Pria | Baju Kurta | https://down-tx-id.img.susercontent.com/id-11134216-7r98s-m037np9mcrn30a_tn.webp | https://s.shopee.co.id/6AfpZWWMS1 | Fashion",
-            "Kurta Sunnah Bandung | Baju Kurta Bandung | https://down-tx-id.img.susercontent.com/id-11134216-7rase-m3i0q0k1cqsf72_tn.webp | https://s.shopee.co.id/2LT712sP0D | Fashion",
-            "Gudang Kurta | Pakaian Muslim | https://down-tx-id.img.susercontent.com/637cee1e7661e334b376831d6bcd76ea_tn.webp | https://s.shopee.co.id/9zsY9G9GZm | Fashion",
-            "Talulla Koko | Kurta Premium | https://down-tx-id.img.susercontent.com/id-11134216-8224q-mjiaadohor2c97_tn.webp | https://s.shopee.co.id/3B2E0pwEzh | Fashion",
-            "CV KIRANA HASNA ELEKTRONIK | Toko Elektronik & Spare part| https://down-tx-id.img.susercontent.com/id-11134216-7r98w-lxnzgirjaq7ib7_tn.webp | https://s.shopee.co.id/7Krn1snX0I | Elektronik",
-            "BASTIAN TAMA ELEKTRONIK | Toko Elektronik & Alat-alatnya | https://down-tx-id.img.susercontent.com/id-11134216-7r98t-lp2yj91ek0zb61_tn.webp | https://s.shopee.co.id/4LEBSWzRwx | Elektronik",
-            "KUSUMA ABADI ELEKTRONIK | Elektronik & Spare part elektronik | https://down-tx-id.img.susercontent.com/542d642f85672047097052e965a21df9_tn.webp | https://s.shopee.co.id/9fFhoYVR2s | Elektronik",
-            "Grosir Murah JKT 2| Kaos & Pakaian Distro | https://down-tx-id.img.susercontent.com/id-11134233-7r991-lyrx47vk8m3f0e_tn.webp | https://s.shopee.co.id/10xjUsMM4c | Fashion",
-            "De Essential Official Store | Perabotan Rumah Tangga | https://down-tx-id.img.susercontent.com/db99fc902e64d3fe778f84d5b4d70f09_tn.webp | https://s.shopee.co.id/20qGh3JCyS | Perabot",
-            "Madia | Perlengkapan Rumah Tangga | https://down-tx-id.img.susercontent.com/id-11134216-8224o-mg6gibco0360ca_tn.webp | https://s.shopee.co.id/4qAS4QQRy1 | Rumah Tangga",
-            "Goto Living | Rumah tangga & Fashion | https://down-tx-id.img.susercontent.com/f8b16c6c2102ca331e4a4aaaf281abc3_tn.webp | https://s.shopee.co.id/4fr1sMpY2w | Rumah Tangga",
-            "Smallsun | Elektronik & Handphone | https://down-tx-id.img.susercontent.com/id-11134216-7r98u-lnmqnbvh48l88f_tn.webp | https://s.shopee.co.id/8fNAdsscil | Elektronik",
-            "Calista Official | Perabotan & toples | https://down-tx-id.img.susercontent.com/d5cea5d2d66737c67833fbb2f23af20c_tn.webp | https://s.shopee.co.id/1gDQJHlSMK | Perabot",
-            "Yoi-shop | Perabotan Rumah Tangga | https://down-tx-id.img.susercontent.com/1c4ff569de3b6024f294c6f5d12f85bb_tn.webp | https://s.shopee.co.id/8KkKFlH6pH | Perabot",
-            "SIV Homedeco | Perabotan Rumah Tangga | https://down-tx-id.img.susercontent.com/8d91cb50bddbcd2b3f8c3ae5ce2ba747_tn.webp | https://s.shopee.co.id/5fm8s6etJw | Perabot",
-            "Faeyza Comp Official | Komputer & Laptop | https://down-tx-id.img.susercontent.com/id-11134233-7qul5-ljqt9ge3b3my8e_tn.webp | https://s.shopee.co.id/AKXyRtwTv0 | Elektronik",
-            "Grage Shop | Fashion muslimah | https://down-tx-id.img.susercontent.com/b939bc0d44777d8d9022001b598b6028_tn.webp | https://s.shopee.co.id/6fegaJOMPk | Fashion",
-            "Putri Rinti Collection | Fashion muslimah | https://down-tx-id.img.susercontent.com/a6120563552db1447bc4c83696ecbcb4_tn.webp | https://s.shopee.co.id/8pjBAc2G67 | Fashion",
-            "Hippo Land | Fashion bayi | https://down-tx-id.img.susercontent.com/58dccd0b35aa0aae11ffd214c9a4b3a5_tn.webp | https://s.shopee.co.id/6L1qC8Q8Q2 | Fashion",
-            "Zamza | Undangan & Buku Tamu | https://down-tx-id.img.susercontent.com/10e0546965e07eb1ce39ced32c2aee1e_tn.webp | https://s.shopee.co.id/8V6LpkOFuw | Undangan",
-            "Undangan Pernikahan Jakarta | Undangan & Buku Tamu | https://down-tx-id.img.susercontent.com/id-11134216-7r98p-lm4rpz3n5vrzc1_tn.webp | https://s.shopee.co.id/3LOFheQeh4 | Undangan",
-            "Triumph International | Peralatan berkemah & Olahraga | https://down-ws-id.img.susercontent.com/b7a62ac331d235af1f48c487ba54c53c_tn.webp | https://s.shopee.co.id/3g17M54iqA | Lain-lain",
-            "Korvo Official Store | Sepeda Listrik, Payung Besar dll | https://down-ws-id.img.susercontent.com/id-11134216-8224r-mk6f8i0wm4g27e_tn.webp | https://s.shopee.co.id/AKY1Ih5iqr | Lain-lain",
-        ];
+        // =========================================================
+        // BAGIAN 2: PENGAMBILAN DATA LIVE DARI GOOGLE SHEETS (API)
+        // =========================================================
+        
+        // MASUKKAN LINK CSV GOOGLE SHEETS KAMU DI SINI
+        const URL_SHEETS_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRwRYel94cUe9przoVOURDHLMtfOhSB0m4rAAO-kYZjp2a1KAIhXFSbYqtImttg5Yv_L7D49I-rD6jl/pub?output=csv";
 
-        const shops = daftarToko.map(item => {
-            const p = item.split('|').map(x => x.trim());
-            return { n: p[0], d: p[1], i: p[2], l: p[3], k: p[4] };
-        });
+        let shops = [];
+        let categories = ["Semua"];
+        let filtered = [], curPage = 1, perPage = 4, selectedCategory = "Semua";
+
+        async function muatDataOnline() {
+            try {
+                const response = await fetch(URL_SHEETS_CSV);
+                const dataTeks = await response.text();
+                
+                // Pisahkan per baris teks CSV
+                const semuaBaris = dataTeks.split('\n').slice(1); 
+
+                shops = semuaBaris.map(baris => {
+                    const kolom = baris.split(',');
+                    if (kolom.length >= 5) {
+                        return {
+                            n: kolom[0] ? kolom[0].replace(/"/g, "").trim() : "", // nama
+                            d: kolom[1] ? kolom[1].replace(/"/g, "").trim() : "", // deskripsi
+                            i: kolom[2] ? kolom[2].trim() : "",                  // gambar
+                            l: kolom[3] ? kolom[3].trim() : "",                  // link shopee
+                            k: kolom[4] ? kolom[4].trim() : ""                   // kategori
+                        };
+                    }
+                    return null;
+                }).filter(item => item !== null && item.n !== "");
+
+                // Acak urutan barang otomatis seperti bawaan kodinganmu
+                shuffleArray(shops);
+
+                // Ambil daftar kategori unik dari data Sheets
+                categories = ["Semua", ...new Set(shops.map(s => s.k))];
+                filtered = [...shops];
+
+                // Hilangkan teks loading lalu render ke layar
+                const loadingText = document.getElementById('loading-text');
+                if(loadingText) loadingText.remove();
+
+                renderCategories();
+                render();
+
+            } catch (error) {
+                console.error("Gagal memuat data:", error);
+                document.getElementById('shop-list').innerHTML = `<p class="col-span-2 text-center text-sm font-medium text-red-500 py-12">Gagal menyambungkan database Sheets. Periksa koneksi internet Anda.</p>`;
+            }
+        }
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -228,20 +246,14 @@
             }
         }
 
-        shuffleArray(shops);
-
-        const categories = ["Semua", ...new Set(shops.map(s => s.k))];
-        let filtered = [...shops], curPage = 1, perPage = 4, selectedCategory = "Semua";
-
-        // PERBAIKAN 2: Mengunci posisi scroll horizontal agar tidak kembali ke awal saat fungsi dijalankan
         function renderCategories() {
             const tagCont = document.getElementById('category-tags');
-            const currentScrollPosition = tagCont.scrollLeft; // Tangkap posisi scroll saat ini
+            if(!tagCont) return;
+            const currentScrollPosition = tagCont.scrollLeft;
 
             tagCont.innerHTML = categories.map((cat, index) => {
                 const isActive = cat === selectedCategory;
                 const isLast = index === categories.length - 1;
-                // PERBAIKAN 3: Menambahkan margin kanan khusus (mr-4) pada item terakhir agar teks ujung kanan tidak terpotong tepi layar
                 return `
                     <button onclick="filterCategory('${cat}')" class="text-xs font-bold px-4 py-2 rounded-xl border transition-all duration-150 whitespace-nowrap ${isLast ? 'mr-4' : ''}
                     ${isActive ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-sm shadow-amber-500/20' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100 hover:text-slate-700'}" >
@@ -250,7 +262,7 @@
                 `;
             }).join('');
 
-            tagCont.scrollLeft = currentScrollPosition; // Terapkan kembali posisi scroll semula
+            tagCont.scrollLeft = currentScrollPosition;
         }
 
         function filterCategory(cat) {
@@ -313,8 +325,8 @@
             window.scrollTo({top: 0, behavior: 'smooth'}); 
         }
 
-        renderCategories();
-        render();
+        // Pemicu awal pengambilan data dari Google Sheets
+        muatDataOnline();
 
 
         // ==========================================
@@ -400,11 +412,10 @@
             isDraggingCat = true;
             e.preventDefault();
             const x = e.pageX - categoryCont.offsetLeft;
-            const walk = (x - catStartX) * 1.5; // Kecepatan scroll geser mouse
+            const walk = (x - catStartX) * 1.5;
             categoryCont.scrollLeft = catScrollLeft - walk;
         });
 
-        // Mencegah klik button tidak sengaja terpicu saat user murni sedang men-drag mouse
         categoryCont.addEventListener('click', (e) => {
             if (isDraggingCat) {
                 e.preventDefault();
