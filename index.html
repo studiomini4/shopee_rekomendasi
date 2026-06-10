@@ -194,6 +194,7 @@
             { judul: "Dzikir Pagi", file: "dzikir.mp3" }
         ];
 
+        // Mengacak urutan audio secara acak
         for (let i = daftarAudio.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [daftarAudio[i], daftarAudio[j]] = [daftarAudio[j], daftarAudio[i]];
@@ -216,7 +217,7 @@
                 audio.play().then(() => {
                     playIcon.classList.add('hidden');
                     pauseIcon.classList.remove('hidden');
-                }).catch(err => console.log("Interaksi user diperlukan terlebih dahulu"));
+                }).catch(err => console.log("Interaksi user diperlukan"));
             } else {
                 audio.pause();
                 playIcon.classList.remove('hidden');
@@ -230,7 +231,7 @@
             audio.play().then(() => {
                 playIcon.classList.add('hidden');
                 pauseIcon.classList.remove('hidden');
-            }).catch(err => console.log("Gagal memutar trek otomatis"));
+            }).catch(err => {});
         }
 
         function prevTrack() {
@@ -239,15 +240,13 @@
             audio.play().then(() => {
                 playIcon.classList.add('hidden');
                 pauseIcon.classList.remove('hidden');
-            }).catch(err => console.log("Gagal memutar trek otomatis"));
+            }).catch(err => {});
         }
 
-        audio.addEventListener('ended', function() {
-            nextTrack();
-        });
-
+        audio.addEventListener('ended', nextTrack);
         muatAudio(indexAudioSekarang);
 
+        // --- OPTIMASI PENGAMBILAN DATA DATABASE GOOGLE SHEETS VIA ASYNC FETCH ---
         const URL_SHEETS_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRwRYel94cUe9przoVOURDHLMtfOhSB0m4rAAO-kYZjp2a1KAIhXFSbYqtImttg5Yv_L7D49I-rD6jl/pub?output=csv";
 
         let shops = [];
@@ -256,7 +255,8 @@
 
         async function muatDataOnline() {
             try {
-                const response = await fetch(URL_SHEETS_CSV);
+                // cache: "no-cache" dikombinasikan dengan pemanggilan DOMContentLoaded agar rendering struktur selesai lebih dulu
+                const response = await fetch(URL_SHEETS_CSV, { cache: "no-cache" });
                 const dataTeks = await response.text();
                 const semuaBaris = dataTeks.split('\n').slice(1); 
 
@@ -274,7 +274,11 @@
                     return null;
                 }).filter(item => item !== null && item.n !== "");
 
-                shuffleArray(shops);
+                // Mengacak daftar toko agar variatif
+                for (let i = shops.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shops[i], shops[j]] = [shops[j], shops[i]];
+                }
 
                 categories = ["Semua", ...new Set(shops.map(s => s.k))];
                 filtered = [...shops];
@@ -287,34 +291,25 @@
 
             } catch (error) {
                 console.error("Gagal memuat data:", error);
-                document.getElementById('shop-list').innerHTML = `<p class="text-center text-sm font-medium text-red-500 py-12">Gagal menyambungkan database Sheets. Periksa koneksi internet Anda.</p>`;
-            }
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+                const listContainer = document.getElementById('shop-list');
+                if (listContainer) {
+                    listContainer.innerHTML = `<p class="text-center text-sm font-medium text-red-500 py-12">Gagal memuat data toko.</p>`;
+                }
             }
         }
 
         function renderCategories() {
             const tagCont = document.getElementById('category-tags');
             if(!tagCont) return;
-            const currentScrollPosition = tagCont.scrollLeft;
-
-            tagCont.innerHTML = categories.map((cat, index) => {
+            tagCont.innerHTML = categories.map(cat => {
                 const isActive = cat === selectedCategory;
-                const isLast = index === categories.length - 1;
                 return `
-                    <button onclick="filterCategory('${cat}')" class="text-xs font-bold px-4 py-2 rounded-xl border transition-all duration-150 whitespace-nowrap ${isLast ? 'mr-4' : ''}
-                    ${isActive ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-sm shadow-amber-500/20' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100 hover:text-slate-700'}" >
+                    <button onclick="filterCategory('${cat}')" class="text-xs font-bold px-4 py-2 rounded-xl border transition-all duration-150 whitespace-nowrap
+                    ${isActive ? 'bg-amber-500 text-slate-950 border-amber-500' : 'bg-slate-50 text-slate-500 border-slate-200'}">
                         ${cat}
                     </button>
                 `;
             }).join('');
-
-            tagCont.scrollLeft = currentScrollPosition;
         }
 
         function filterCategory(cat) {
@@ -325,44 +320,38 @@
 
         function applyFilter() {
             const q = document.getElementById('searchInput').value.toLowerCase();
-            
             filtered = shops.filter(s => {
-                const matchQuery = s.n.toLowerCase().includes(q) || s.k.toLowerCase().includes(q) || s.d.toLowerCase().includes(q);
-                const matchCategory = selectedCategory === "Semua" || s.k === selectedCategory;
-                return matchQuery && matchCategory;
+                return (s.n.toLowerCase().includes(q) || s.k.toLowerCase().includes(q) || s.d.toLowerCase().includes(q)) && (selectedCategory === "Semua" || s.k === selectedCategory);
             });
-
             curPage = 1;
             renderCategories();
             render();
         }
 
         function handleSearch() {
-            if(document.getElementById('searchInput').value !== "") {
-                selectedCategory = "Semua";
-            }
+            if(document.getElementById('searchInput').value !== "") selectedCategory = "Semua";
             applyFilter();
         }
 
         function render() {
             const cont = document.getElementById('shop-list');
+            if(!cont) return;
             const start = (curPage - 1) * perPage;
             const items = filtered.slice(start, start + perPage);
             const total = Math.ceil(filtered.length / perPage);
-
-            cont.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 w-full";
 
             if(items.length === 0) {
                 cont.className = "block w-full text-center";
                 cont.innerHTML = `<p class="text-sm font-medium text-slate-400 py-12">Tidak ada toko yang cocok...</p>`;
             } else {
+                cont.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 w-full";
                 cont.innerHTML = items.map(s => `
                     <a href="${s.l}" target="_blank" class="shop-card bg-white p-3.5 rounded-2xl flex flex-col items-center text-center shadow-sm border border-slate-100 justify-between h-full group">
                         <div class="w-full flex flex-col items-center">
-                            <div class="w-20 h-20 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 mb-3 p-1 flex items-center justify-center">
+                            <div class="w-20 h-20 rounded-xl overflow-hidden bg-slate-50 mb-3 flex items-center justify-center border border-slate-100 p-1">
                                 <img src="${s.i}" class="w-full h-full rounded-lg object-cover" loading="lazy">
                             </div>
-                            <span class="text-[8px] font-black tracking-widest text-amber-600 bg-amber-50 px-2 py-0.5 rounded mb-2 uppercase">${s.k}</span>
+                            <span class="text-[8px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded mb-2 uppercase">${s.k}</span>
                             <h3 class="text-xs font-bold line-clamp-2 text-slate-900 group-hover:text-amber-600 transition-colors px-1 w-full leading-snug mb-1">${s.n}</h3>
                         </div>
                         <p class="text-[10px] text-slate-400 font-medium line-clamp-1 w-full px-1 mt-2">${s.d}</p>
@@ -380,7 +369,8 @@
             window.scrollTo({top: 0, behavior: 'smooth'}); 
         }
 
-        muatDataOnline();
+        // Menjalankan pencarian database secara background pasca halaman selesai dirender dasar
+        window.addEventListener('DOMContentLoaded', muatDataOnline);
 
         const categoryCont = document.getElementById('category-tags');
         let isCatDown = false;
@@ -415,59 +405,46 @@
             }
         }, true);
 
-        // --- INTERAKSI TOMBOL INSTALASI PWA PADA BROWSER ---
+        // --- HANDLING SISTEM INSTALASI PWA PADA BROWSER ---
         let deferredPrompt;
         const btnInstall = document.getElementById('btnInstall');
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault(); 
             deferredPrompt = e;  
-            btnInstall.style.display = 'flex'; 
+            if(btnInstall) btnInstall.style.display = 'flex'; 
         });
 
-        btnInstall.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt(); 
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    console.log('User sukses menginstal aplikasi.');
+        if(btnInstall) {
+            btnInstall.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                    btnInstall.style.display = 'none'; 
                 }
-                deferredPrompt = null;
-                btnInstall.style.display = 'none'; 
-            }
-        });
+            });
+        }
 
         window.addEventListener('appinstalled', () => {
-            btnInstall.style.display = 'none'; 
+            if(btnInstall) btnInstall.style.display = 'none'; 
             deferredPrompt = null;
         });
 
-        // --- SKRIP SW.JS MENGGUNAKAN BLOB FILE SEPERTI SEBELUMNYA ---
+        // --- REGISTER SERVICE WORKER SECARA EFISIEN TANPA BEBAN ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
-                    const CACHE_NAME = 'mitra-belanja-v1';
-                    const assets = ['index.html', 'manifest.json'];
-
+                    const CACHE_NAME = 'mitra-belanja-v2';
                     self.addEventListener('install', (e) => {
-                        e.waitUntil(
-                            caches.open(CACHE_NAME).then((cache) => cache.addAll(assets))
-                        );
+                        e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(['index.html', 'manifest.json'])));
                     });
-
                     self.addEventListener('fetch', (e) => {
-                        e.respondWith(
-                            caches.match(e.request).then((response) => response || fetch(e.request))
-                        );
+                        e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
                     });
                 `;
-
                 const blob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-
-                navigator.serviceWorker.register(swUrl)
-                .then(() => console.log('Sistem PWA Aktif Otomatis (Single File + Manifest)!'))
-                .catch(err => console.log('Pendaftaran SW tertunda:', err));
+                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
             });
         }
     </script>
