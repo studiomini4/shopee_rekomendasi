@@ -33,26 +33,31 @@
         
         /* PENGATURAN BACKGROUND DASBOR RESPONSIF */
         .gradient-premium { 
-            background-image: url('hp.webp'); /* Default gambar untuk HP */
+            background-image: url('hp.webp'); 
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
         }
         @media (min-width: 640px) {
             .gradient-premium { 
-                background-image: url('desktop.webp'); /* Otomatis ganti ke gambar Desktop jika layar lebar */
+                background-image: url('desktop.webp'); 
             }
+        }
+
+        /* EFEK LIST/GARIS TEPI PUTIH SOLID (SEKARANG BERLAKU DI HP & DESKTOP) */
+        .text-outline {
+            text-shadow: 
+                -1.5px -1.5px 0 #ffffff,  
+                 1.5px -1.5px 0 #ffffff,
+                -1.5px  1.5px 0 #ffffff,
+                 1.5px  1.5px 0 #ffffff;
         }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        #category-tags {
-            cursor: grab;
-        }
-        #category-tags:active {
-            cursor: grabbing;
-        }
+        #category-tags { cursor: grab; }
+        #category-tags:active { cursor: grabbing; }
     </style>
 </head>
 <body class="text-slate-800 flex flex-col min-h-screen antialiased relative">
@@ -73,19 +78,24 @@
         </div>
     </nav>
 
-    <section class="gradient-premium px-6 pt-10 pb-16 md:py-20 text-white text-center relative overflow-hidden">
-        <div class="absolute inset-0 bg-black/40 md:bg-transparent z-0"></div>
+    <section class="gradient-premium px-6 pt-12 pb-20 md:py-24 text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-black/5 z-0"></div>
         
         <div class="max-w-xl md:max-w-4xl mx-auto relative z-10">
-            <h2 class="text-2xl md:text-5xl font-black tracking-tight mb-2 drop-shadow-md text-white md:text-slate-900">
+            
+            <h2 class="text-2xl md:text-5xl font-black tracking-tight mb-3 text-slate-900 text-outline">
                 SELAMAT DATANG 👋
             </h2>
-            <p class="text-xs md:text-base text-white md:text-slate-800 leading-relaxed font-bold max-w-sm md:max-w-2xl mx-auto drop-shadow-sm md:drop-shadow-none">
-                Selamat berbelanja, kami adalah mitra shopee yang terdaftar sebagai afiliasi yang sah. <br>
-                <span class="bg-amber-500 text-slate-950 border border-amber-600 px-3 py-1.5 md:px-6 md:py-2 rounded-full mt-3 inline-block font-extrabold shadow-md hover:bg-amber-600 transition-all">
-                    Klik Toko Untuk Melihat Produk 
-                </span>
+            
+            <p class="text-xs md:text-base text-slate-800 leading-relaxed font-extrabold max-w-sm md:max-w-2xl mx-auto text-outline">
+                Selamat berbelanja, kami adalah mitra shopee yang terdaftar sebagai afiliasi yang sah.
             </p>
+            
+            <div class="mt-4">
+                <a href="https://shopee.co.id/studiomini" target="_blank" class="bg-amber-500 text-slate-950 border border-amber-600 px-4 py-2 md:px-6 md:py-2.5 rounded-full inline-block text-[11px] md:text-xs font-black shadow-md hover:bg-amber-600 hover:scale-105 transition-all">
+                    Klik Toko Untuk Melihat Produk 
+                </a>
+            </div>
         </div>
     </section>
 
@@ -157,9 +167,6 @@
     </footer>
 
     <script>
-        // ==========================================
-        // BAGIAN 1: PENGATURAN PLAYLIST MP3 ANDA
-        // ==========================================
         const daftarAudio = [
             { judul: "Arrohman-Ustad Abdul Qadir", file: "surah 1.ogg" },
             { judul: "Al Waqiah-Ustad Abdul Qadir", file: "surah 2.ogg" },
@@ -214,16 +221,11 @@
 
         muatAudio(indexAudioSekarang);
 
-
-        // =========================================================
-        // BAGIAN 2: PENGAMBILAN DATA LIVE DARI GOOGLE SHEETS (API)
-        // =========================================================
         const URL_SHEETS_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRwRYel94cUe9przoVOURDHLMtfOhSB0m4rAAO-kYZjp2a1KAIhXFSbYqtImttg5Yv_L7D49I-rD6jl/pub?output=csv";
 
         let shops = [];
         let categories = ["Semua"];
         let filtered = [], curPage = 1, perPage = 8, selectedCategory = "Semua"; 
-        // Catatan: perPage dinaikkan dari 4 ke 8 agar saat di layar desktop lebar barisnya terisi penuh tidak kosong.
 
         async function muatDataOnline() {
             try {
@@ -315,21 +317,15 @@
             applyFilter();
         }
 
-        // ==========================================
-        // BAGIAN UTAMA YANG DIUBAH AGAR GRID RESPONSIF
-        // ==========================================
         function render() {
             const cont = document.getElementById('shop-list');
             const start = (curPage - 1) * perPage;
             const items = filtered.slice(start, start + perPage);
             const total = Math.ceil(filtered.length / perPage);
 
-            // Kita pasang kelas grid dinamis di sini: 
-            // HP = 2 kolom (grid-cols-2), Tablet = 3 kolom (sm:grid-cols-3), Laptop/Desktop = 4 kolom (md:grid-cols-4)
             cont.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 w-full";
 
             if(items.length === 0) {
-                // Jika kosong, hilangkan format grid agar teks error berada di tengah layar
                 cont.className = "block w-full text-center";
                 cont.innerHTML = `<p class="text-sm font-medium text-slate-400 py-12">Tidak ada toko yang cocok...</p>`;
             } else {
@@ -359,9 +355,6 @@
 
         muatDataOnline();
 
-        // =======================================================
-        // MOUSE DRAG SCROLL UNTUK KATEGORI
-        // =======================================================
         const categoryCont = document.getElementById('category-tags');
         let isCatDown = false;
         let catStartX;
@@ -375,13 +368,8 @@
             catScrollLeft = categoryCont.scrollLeft;
         });
 
-        categoryCont.addEventListener('mouseleave', () => {
-            isCatDown = false;
-        });
-
-        categoryCont.addEventListener('mouseup', () => {
-            isCatDown = false;
-        });
+        categoryCont.addEventListener('mouseleave', () => { isCatDown = false; });
+        categoryCont.addEventListener('mouseup', () => { isCatDown = false; });
 
         categoryCont.addEventListener('mousemove', (e) => {
             if (!isCatDown) return;
