@@ -13,6 +13,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mitra Belanja Online</title>
+
+    <!-- MANIFEST DENGAN ICON YANG SUDAH DISINKRONKAN (192x192.png & 512x512.png) -->
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Mitra%20Belanja%20Online%22,%22short_name%22:%22Afiliasi%20Shopee%22,%22start_url%22:%22index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f8fafc%22,%22theme_color%22:%22%23f59e0b%22,%22icons%22:[{%22src%22:%22192x192.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22},{%22src%22:%22512x512.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
+    
+    <meta name="theme-color" content="#f59e0b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Afiliasi Shopee">
+    
+    <!-- ICON KHUSUS PERANGKAT APPLE (180x180.png) -->
+    <link class="apple-touch-icon" href="180x180.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { 
@@ -72,9 +84,17 @@
                 <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
                 AFILIASI SHOPEE
             </h1>
-            <a href="https://shopee.co.id/studiomini" target="_blank" class="text-[10px] bg-slate-100 px-2.5 py-1.5 rounded-lg font-bold text-slate-600 uppercase hover:bg-amber-500 hover:text-slate-950 transition-all duration-200 block cursor-pointer tracking-wider">
-                studiomini
-            </a>
+            
+            <div class="flex items-center gap-2">
+                <button id="btnInstall" class="hidden text-[10px] bg-amber-500 hover:bg-amber-600 text-slate-950 px-2.5 py-1.5 rounded-lg font-bold uppercase transition-all duration-200 tracking-wider items-center gap-1 shadow-sm">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                    Pasang
+                </button>
+                
+                <a href="https://shopee.co.id/studiomini" target="_blank" class="text-[10px] bg-slate-100 px-2.5 py-1.5 rounded-lg font-bold text-slate-600 uppercase hover:bg-amber-500 hover:text-slate-950 transition-all duration-200 block cursor-pointer tracking-wider">
+                    studiomini
+                </a>
+            </div>
         </div>
     </nav>
 
@@ -250,7 +270,7 @@
                             d: kolom[1] ? kolom[1].replace(/"/g, "").trim() : "", 
                             i: kolom[2] ? kolom[2].trim() : "",                  
                             l: kolom[3] ? kolom[3].trim() : "",                  
-                            k: kolom[4] ? kolom[4].trim() : ""                   
+                            k: kolom[4] ? kolom[4].trim() : ""                    
                         };
                     }
                     return null;
@@ -396,6 +416,63 @@
                 isDraggingCat = false;
             }
         }, true);
+
+        // --- INTERAKSI TOMBOL INSTALASI PWA PADA BROWSER ---
+        let deferredPrompt;
+        const btnInstall = document.getElementById('btnInstall');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); 
+            deferredPrompt = e;  
+            btnInstall.style.display = 'flex'; 
+        });
+
+        btnInstall.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt(); 
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User sukses menginstal aplikasi.');
+                }
+                deferredPrompt = null;
+                btnInstall.style.display = 'none'; 
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            btnInstall.style.display = 'none'; 
+            deferredPrompt = null;
+        });
+
+        // --- SKRIP GENERATOR OTOMATIS: MEMBUAT SW.JS TANPA FILE TERPISAH ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Kode Service Worker yang diubah jadi teks blob
+                const swCode = `
+                    const CACHE_NAME = 'mitra-belanja-v1';
+                    const assets = ['index.html'];
+
+                    self.addEventListener('install', (e) => {
+                        e.waitUntil(
+                            caches.open(CACHE_NAME).then((cache) => cache.addAll(assets))
+                        );
+                    });
+
+                    self.addEventListener('fetch', (e) => {
+                        e.respondWith(
+                            caches.match(e.request).then((response) => response || fetch(e.request))
+                        );
+                    });
+                `;
+
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+
+                navigator.serviceWorker.register(swUrl)
+                .then(() => console.log('Sistem PWA Aktif Otomatis (Single File)!'))
+                .catch(err => console.log('Pendaftaran SW tertunda:', err));
+            });
+        }
     </script>
 </body>
 </html>
