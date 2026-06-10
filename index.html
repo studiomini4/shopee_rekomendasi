@@ -30,7 +30,20 @@
             }
         }
         .shop-card:active { transform: scale(0.98); }
-        .gradient-premium { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        
+        /* PENGATURAN BACKGROUND DASBOR RESPONSIF */
+        .gradient-premium { 
+            background-image: url('hp.webp'); /* Default gambar untuk HP */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        @media (min-width: 640px) {
+            .gradient-premium { 
+                background-image: url('desktop.webp'); /* Otomatis ganti ke gambar Desktop jika layar lebar */
+            }
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
@@ -61,12 +74,13 @@
     </nav>
 
     <section class="gradient-premium px-6 pt-10 pb-16 text-white text-center relative overflow-hidden">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.15),transparent_50%)]"></div>
+        <div class="absolute inset-0 bg-black/40 z-0"></div>
+        
         <div class="max-w-xl mx-auto relative z-10">
-            <h2 class="text-2xl font-black tracking-tight mb-2">SELAMAT DATANG 👋</h2>
-            <p class="text-xs text-slate-300 opacity-90 leading-relaxed font-medium max-w-sm mx-auto">
+            <h2 class="text-2xl font-black tracking-tight mb-2 drop-shadow-md">SELAMAT DATANG 👋</h2>
+            <p class="text-xs text-white leading-relaxed font-bold max-w-sm mx-auto drop-shadow-sm">
                 Selamat berbelanja, kami adalah mitra shopee yang terdaftar sebagai afiliasi yang sah. <br>
-                <span class="bg-white/10 text-amber-400 border border-white/10 px-2.5 py-1 rounded-full mt-3 inline-block font-semibold">
+                <span class="bg-amber-500 text-slate-950 border border-amber-600 px-2.5 py-1 rounded-full mt-3 inline-block font-extrabold shadow-md">
                     Klik Toko Untuk Melihat Produk 
                 </span>
             </p>
