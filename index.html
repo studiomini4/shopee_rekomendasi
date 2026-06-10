@@ -14,15 +14,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mitra Belanja Online</title>
 
-    <!-- MANIFEST DENGAN ICON YANG SUDAH DISINKRONKAN (192x192.png & 512x512.png) -->
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Mitra%20Belanja%20Online%22,%22short_name%22:%22Afiliasi%20Shopee%22,%22start_url%22:%22index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f8fafc%22,%22theme_color%22:%22%23f59e0b%22,%22icons%22:[{%22src%22:%22192x192.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22},{%22src%22:%22512x512.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
+    <link rel="manifest" href="manifest.json">
     
     <meta name="theme-color" content="#f59e0b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Afiliasi Shopee">
     
-    <!-- ICON KHUSUS PERANGKAT APPLE (180x180.png) -->
     <link class="apple-touch-icon" href="180x180.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -444,13 +442,12 @@
             deferredPrompt = null;
         });
 
-        // --- SKRIP GENERATOR OTOMATIS: MEMBUAT SW.JS TANPA FILE TERPISAH ---
+        // --- SKRIP SW.JS MENGGUNAKAN BLOB FILE SEPERTI SEBELUMNYA ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // Kode Service Worker yang diubah jadi teks blob
                 const swCode = `
                     const CACHE_NAME = 'mitra-belanja-v1';
-                    const assets = ['index.html'];
+                    const assets = ['index.html', 'manifest.json'];
 
                     self.addEventListener('install', (e) => {
                         e.waitUntil(
@@ -469,7 +466,7 @@
                 const swUrl = URL.createObjectURL(blob);
 
                 navigator.serviceWorker.register(swUrl)
-                .then(() => console.log('Sistem PWA Aktif Otomatis (Single File)!'))
+                .then(() => console.log('Sistem PWA Aktif Otomatis (Single File + Manifest)!'))
                 .catch(err => console.log('Pendaftaran SW tertunda:', err));
             });
         }
