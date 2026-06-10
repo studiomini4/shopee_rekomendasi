@@ -92,9 +92,9 @@
             </p>
             
             <div class="mt-4">
-                <a href="https://shopee.co.id/studiomini" target="_blank" class="bg-amber-500 text-slate-950 border border-amber-600 px-4 py-2 md:px-6 md:py-2.5 rounded-full inline-block text-[11px] md:text-xs font-black shadow-md hover:bg-amber-600 hover:scale-105 transition-all">
+                <div class="bg-amber-500 text-slate-950 border border-amber-600 px-4 py-2 md:px-6 md:py-2.5 rounded-full inline-block text-[11px] md:text-xs font-black shadow-md select-none cursor-default">
                     Klik Toko Untuk Melihat Produk 
-                </a>
+                </div>
             </div>
         </div>
     </section>
@@ -176,7 +176,6 @@
             { judul: "Dzikir Pagi", file: "dzikir.mp3" }
         ];
 
-        // MEMBUAT PLAYLIST AUDIO ACAK OTOMATIS SAAT MASUK WEB
         for (let i = daftarAudio.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [daftarAudio[i], daftarAudio[j]] = [daftarAudio[j], daftarAudio[i]];
