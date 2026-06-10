@@ -62,7 +62,7 @@
     <audio id="bgMusic"></audio>
 
     <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-4 py-3.5">
-        <div class="max-w-xl mx-auto flex justify-between items-center">
+        <div class="max-w-xl md:max-w-7xl mx-auto flex justify-between items-center">
             <h1 class="text-slate-900 font-black text-lg tracking-tight flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
                 AFILIASI SHOPEE
@@ -73,21 +73,23 @@
         </div>
     </nav>
 
-    <section class="gradient-premium px-6 pt-10 pb-16 text-white text-center relative overflow-hidden">
-        <div class="absolute inset-0 bg-black/40 z-0"></div>
+    <section class="gradient-premium px-6 pt-10 pb-16 md:py-20 text-white text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-black/40 md:bg-transparent z-0"></div>
         
-        <div class="max-w-xl mx-auto relative z-10">
-            <h2 class="text-2xl font-black tracking-tight mb-2 drop-shadow-md">SELAMAT DATANG 👋</h2>
-            <p class="text-xs text-white leading-relaxed font-bold max-w-sm mx-auto drop-shadow-sm">
+        <div class="max-w-xl md:max-w-4xl mx-auto relative z-10">
+            <h2 class="text-2xl md:text-5xl font-black tracking-tight mb-2 drop-shadow-md text-white md:text-slate-900">
+                SELAMAT DATANG 👋
+            </h2>
+            <p class="text-xs md:text-base text-white md:text-slate-800 leading-relaxed font-bold max-w-sm md:max-w-2xl mx-auto drop-shadow-sm md:drop-shadow-none">
                 Selamat berbelanja, kami adalah mitra shopee yang terdaftar sebagai afiliasi yang sah. <br>
-                <span class="bg-amber-500 text-slate-950 border border-amber-600 px-2.5 py-1 rounded-full mt-3 inline-block font-extrabold shadow-md">
+                <span class="bg-amber-500 text-slate-950 border border-amber-600 px-3 py-1.5 md:px-6 md:py-2 rounded-full mt-3 inline-block font-extrabold shadow-md hover:bg-amber-600 transition-all">
                     Klik Toko Untuk Melihat Produk 
                 </span>
             </p>
         </div>
     </section>
 
-    <main class="max-w-xl mx-auto px-4 flex-grow w-full -mt-8 relative z-20">
+    <main class="max-w-xl md:max-w-7xl mx-auto px-4 flex-grow w-full -mt-8 relative z-20">
         
         <div id="audioPlayer" class="w-full bg-white/95 backdrop-blur-md py-1 px-2.5 rounded-xl shadow-md border border-slate-100 flex items-center justify-between gap-2 mb-3 select-none h-9">
             <div class="flex items-center gap-1.5 overflow-hidden min-w-0 flex-1">
@@ -135,8 +137,8 @@
             </p>
         </div>
 
-        <div id="shop-list" class="grid grid-cols-2 gap-3.5">
-            <p id="loading-text" class="col-span-2 text-center text-sm font-medium text-slate-400 py-12 animate-pulse">Menghubungkan ke Google Sheets...</p>
+        <div id="shop-list">
+            <p id="loading-text" class="text-center text-sm font-medium text-slate-400 py-12 animate-pulse">Menghubungkan ke Google Sheets...</p>
         </div>
 
         <div id="pagination-container" class="mt-8 grid grid-cols-2 gap-4 pb-12" style="display: none;">
@@ -220,7 +222,8 @@
 
         let shops = [];
         let categories = ["Semua"];
-        let filtered = [], curPage = 1, perPage = 4, selectedCategory = "Semua";
+        let filtered = [], curPage = 1, perPage = 8, selectedCategory = "Semua"; 
+        // Catatan: perPage dinaikkan dari 4 ke 8 agar saat di layar desktop lebar barisnya terisi penuh tidak kosong.
 
         async function muatDataOnline() {
             try {
@@ -255,7 +258,7 @@
 
             } catch (error) {
                 console.error("Gagal memuat data:", error);
-                document.getElementById('shop-list').innerHTML = `<p class="col-span-2 text-center text-sm font-medium text-red-500 py-12">Gagal menyambungkan database Sheets. Periksa koneksi internet Anda.</p>`;
+                document.getElementById('shop-list').innerHTML = `<p class="text-center text-sm font-medium text-red-500 py-12">Gagal menyambungkan database Sheets. Periksa koneksi internet Anda.</p>`;
             }
         }
 
@@ -312,14 +315,23 @@
             applyFilter();
         }
 
+        // ==========================================
+        // BAGIAN UTAMA YANG DIUBAH AGAR GRID RESPONSIF
+        // ==========================================
         function render() {
             const cont = document.getElementById('shop-list');
             const start = (curPage - 1) * perPage;
             const items = filtered.slice(start, start + perPage);
             const total = Math.ceil(filtered.length / perPage);
 
+            // Kita pasang kelas grid dinamis di sini: 
+            // HP = 2 kolom (grid-cols-2), Tablet = 3 kolom (sm:grid-cols-3), Laptop/Desktop = 4 kolom (md:grid-cols-4)
+            cont.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 w-full";
+
             if(items.length === 0) {
-                cont.innerHTML = `<p class="col-span-2 text-center text-sm font-medium text-slate-400 py-12">Tidak ada toko yang cocok...</p>`;
+                // Jika kosong, hilangkan format grid agar teks error berada di tengah layar
+                cont.className = "block w-full text-center";
+                cont.innerHTML = `<p class="text-sm font-medium text-slate-400 py-12">Tidak ada toko yang cocok...</p>`;
             } else {
                 cont.innerHTML = items.map(s => `
                     <a href="${s.l}" target="_blank" class="shop-card bg-white p-3.5 rounded-2xl flex flex-col items-center text-center shadow-sm border border-slate-100 justify-between h-full group">
