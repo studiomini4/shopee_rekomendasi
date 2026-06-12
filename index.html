@@ -273,7 +273,6 @@
 
         async function muatDataOnline() {
             try {
-                // cache: "no-cache" dikombinasikan dengan pemanggilan DOMContentLoaded agar rendering struktur selesai lebih dulu
                 const response = await fetch(URL_SHEETS_CSV, { cache: "no-cache" });
                 const dataTeks = await response.text();
                 const semuaBaris = dataTeks.split('\n').slice(1); 
@@ -292,7 +291,6 @@
                     return null;
                 }).filter(item => item !== null && item.n !== "");
 
-                // Mengacak daftar toko agar variatif
                 for (let i = shops.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [shops[i], shops[j]] = [shops[j], shops[i]];
@@ -387,7 +385,6 @@
             window.scrollTo({top: 0, behavior: 'smooth'}); 
         }
 
-        // Menjalankan pencarian database secara background pasca halaman selesai dirender dasar
         window.addEventListener('DOMContentLoaded', muatDataOnline);
 
         const categoryCont = document.getElementById('category-tags');
@@ -423,7 +420,6 @@
             }
         }, true);
 
-        // --- HANDLING SISTEM INSTALASI PWA PADA BROWSER ---
         let deferredPrompt;
         const btnInstall = document.getElementById('btnInstall');
 
@@ -449,7 +445,6 @@
             deferredPrompt = null;
         });
 
-        // --- REGISTER SERVICE WORKER SECARA EFISIEN TANPA BEBAN ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
@@ -466,5 +461,17 @@
             });
         }
     </script>
-</body>
+
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6a2c46abe98c2e1c2eb0ff0c/1jquf83nk';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
+    </body>
 </html>
